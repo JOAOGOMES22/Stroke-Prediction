@@ -7,12 +7,12 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-       body {
-        background: linear-gradient(to right, #a8e063, #56ab2f); /* Gradiente verde claro */
-        color: #ffffff; /* Cor do texto para contraste */
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
+        body {
+            background: #023324; /* Fundo verde escuro */
+            color: #ffffff; /* Cor do texto */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
         }
         h1, h3 {
             font-weight: bold;
@@ -30,8 +30,7 @@
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
         .btn-primary {
-            background: #ff416c;
-            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            background: linear-gradient(45deg, #28a745, #3ebd5b);
             border: none;
             border-radius: 30px;
             padding: 10px 20px;
@@ -39,8 +38,8 @@
             transition: all 0.3s ease;
         }
         .btn-primary:hover {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            box-shadow: 0 8px 20px rgba(255, 75, 43, 0.4);
+            background: linear-gradient(45deg, #3ebd5b, #28a745);
+            box-shadow: 0 8px 20px rgba(62, 189, 91, 0.4);
         }
         .form-control-file {
             border: 2px dashed #ffffff;
@@ -52,28 +51,28 @@
             transition: border-color 0.3s ease, background 0.3s ease;
         }
         .form-control-file:hover {
-            border-color: #ff416c;
+            border-color: #28a745;
             background: rgba(255, 255, 255, 0.2);
         }
         .img-fluid {
+            width: 100%;  /* Ajuste para ocupar toda a largura do contêiner */
+            height: auto; /* Mantém a proporção da imagem */
             border-radius: 15px;
             border: 3px solid rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease, border-color 0.3s ease;
         }
         .img-fluid:hover {
-            transform: scale(1.1);
-            border-color: #ff416c;
+            transform: scale(1.05);
+            border-color: #28a745;
         }
         .table {
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+            color: #ffffff;
         }
         .container {
-            max-width: 1200px;
-        }
-        .text-center {
-            color: #ffffff;
+            max-width: 1400px; /* Aumenta o tamanho máximo do container */
         }
         footer {
             text-align: center;
@@ -97,7 +96,7 @@
     <!-- Formulário de Upload -->
     <div class="card shadow mb-5">
         <div class="card-body">
-            <h5 class="card-title text-center" style="color: #ff416c;">📂 Faça o Upload de seu Arquivo CSV</h5>
+            <h5 class="card-title text-center">📂 Faça o Upload de seu Arquivo CSV</h5>
             <form action="/upload" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <input type="file" name="file" accept=".csv" class="form-control-file" required>
@@ -120,7 +119,7 @@
         <h3 class="mt-5 text-center">📈 Gráficos Gerados</h3>
         <div class="row">
             {% for graph in graphs %}
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-lg-6 col-md-12 mb-4">  <!-- Alterado para col-lg-6 e col-md-12 para gráficos maiores -->
                 <div class="card shadow">
                     <div class="card-body text-center">
                         <h5 class="card-title">Gráfico {{ loop.index }}</h5>
@@ -134,7 +133,7 @@
 </div>
 
 <footer>
-    © 2024 Análise Interativa - Creditos reservados a <span>Allan Rodrigo</span> e <span>João Gomes</span>
+    © 2024 Análise Interativa - Créditos reservados a <span>Allan Rodrigo</span> e <span>João Gomes</span>
 </footer>
 
 <!-- Bootstrap JS and dependencies -->
