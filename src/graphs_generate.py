@@ -1,13 +1,13 @@
 import logging
+from src.utils import setup_logging
 import os
 import uuid
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Configuração do logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+setup_logging()
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +29,7 @@ class GraphGenerator:
 
     def save_graph(self):
         """Salva o gráfico no diretório estático e retorna o nome do arquivo."""
-        os.makedirs(self.static_folder, exist_ok=True)  # Garante que o diretório exista
+        os.makedirs(self.static_folder, exist_ok=True)
         graph_filename = f'graph_{uuid.uuid4().hex}.png'
         graph_path = os.path.join(self.static_folder, graph_filename)
 
@@ -52,9 +52,13 @@ class GraphGenerator:
             alpha=0.5, label='All Patients'
         )
         sns.histplot(
-            x=self.data[self.data['Stroke History'] == 1]['Age'], bins=20, kde=True,
+            x=self.data[self.data['Stroke History'] == 1]['Age'], 
+            bins=20, 
+            kde=True,
             weights=self.data[self.data['Stroke History'] == 1]['Age Weight'],
-            alpha=0.8, label='Stroke Patients'
+            alpha=0.8, 
+            label='Stroke Patients', 
+            palette='rocket',
         )
         plt.title('Age Distribution: All vs Stroke Patients', fontsize=14)
         plt.xlabel('Age', fontsize=12)
@@ -66,7 +70,12 @@ class GraphGenerator:
         """Gera o gráfico de hipertensão e diagnóstico."""
         logger.info("Gerando gráfico de hipertensão e diagnóstico.")
         plt.figure(figsize=(8, 5))
-        sns.countplot(x='Hypertension', hue='Diagnosis', data=self.data)
+        sns.countplot(
+            x='Hypertension', 
+            hue='Diagnosis', 
+            data=self.data,
+            palette='rocket',
+            )
         plt.title('Hypertension and Stroke Diagnosis', fontsize=14)
         plt.xlabel('Hypertension (0=No, 1=Yes)', fontsize=12)
         plt.ylabel('Count', fontsize=12)
@@ -80,12 +89,13 @@ class GraphGenerator:
             x='Diagnosis',
             y='Average Glucose Level',
             data=self.data,
+            hue='Diagnosis',
             jitter=True,
             size=8,
             alpha=0.7,
             edgecolor="black",
             linewidth=0.6,
-            palette="rocket"
+            palette="rocket",
         )
         plt.title('Impact of Glucose Levels on Stroke Diagnosis', fontsize=18, weight='bold')
         plt.xlabel('Stroke Diagnosis', fontsize=14)
@@ -104,7 +114,8 @@ class GraphGenerator:
             index='Diagnosis',
             columns='Stress Levels Grouped',
             aggfunc='size',
-            fill_value=0
+            fill_value=0,
+            observed=False,
         )
         plt.figure(figsize=(10, 6))
         sns.heatmap(

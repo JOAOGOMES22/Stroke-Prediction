@@ -1,0 +1,9 @@
+# Ignorar arquivos PNG
+*.png
+
+# Ignorar arquivos CSV
+*.csv
+
+# Ignorar arquivos de cache Python
+*.pyc
+__pycache__/
