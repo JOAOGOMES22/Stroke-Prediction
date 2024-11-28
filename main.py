@@ -8,54 +8,64 @@ from src.data_processing import DataProcessor
 from src.model_training import StrokePredictionModel
 from src.config import SELECTED_COLUMNS
 
-# Configuração do logging
+# Logging configuration
 setup_logging()
 logger = logging.getLogger(__name__)
 
-# Configuração da aplicação Flask
+# Flask application configuration
 app = Flask(__name__, static_folder='app/static', template_folder='app/templates')
-app.config['UPLOAD_FOLDER'] = 'app/uploads'
-app.config['STATIC_FOLDER'] = 'app/static'
-app.config['MODEL_PATH'] = 'models/model.joblib'
+app.config['UPLOAD_FOLDER'] = 'app/uploads'  # Directory for uploaded files
+app.config['STATIC_FOLDER'] = 'app/static'  # Directory for static content (e.g., graphs)
+app.config['MODEL_PATH'] = 'models/model.joblib'  # Path for saving the trained model
 
-# Variável global para armazenar os dados carregados
+# Global variable to store uploaded and processed data
 uploaded_data = None
 
-# Rota para a página principal (upload)
+# Route for the home page
 @app.route('/')
 def index():
+    """
+    Render the home page, allowing users to upload CSV files.
+    """
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    """
+    Handle file uploads, process the data, and generate graphs.
+
+    - Checks if a valid CSV file is uploaded.
+    - Loads and preprocesses the data.
+    - Generates exploratory data analysis graphs.
+    """
     global uploaded_data
 
     if 'file' not in request.files:
-        logger.warning("Nenhum arquivo foi enviado no formulário.")
+        logger.warning("No file provided in the request.")
         return redirect(request.url)
 
     file = request.files['file']
     if file.filename == '':
-        logger.warning("Arquivo enviado está vazio.")
+        logger.warning("Uploaded file is empty.")
         return redirect(request.url)
 
     if file and file.filename.endswith('.csv'):
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
-        logger.info(f"Arquivo salvo em: {file_path}")
+        logger.info(f"File saved at: {file_path}")
 
-        # Carregar e pré-processar os dados
+        # Load and preprocess the data
         raw_data = load_csv(file_path)
-        logger.info("Arquivo CSV carregado com sucesso. Iniciando o pré-processamento...")
+        logger.info("CSV file successfully loaded. Starting preprocessing...")
         processor = DataProcessor(raw_data[SELECTED_COLUMNS + ["Diagnosis"]])
         uploaded_data = processor.process(target_column="Diagnosis")
-        logger.info("Dados pré-processados com sucesso.")
+        logger.info("Data preprocessing completed successfully.")
 
-        # Gerar gráficos com os dados originais (opcional, pode usar uploaded_data também)
+        # Generate graphs (optional: use raw_data or processed data)
         graph_generator = GraphGenerator(raw_data, app.config['STATIC_FOLDER'])
         graphs = graph_generator.generate_all_graphs()
 
-        # Renderizar a página com os gráficos gerados e a prévia dos dados
+        # Render the home page with graphs and a data preview
         return render_template(
             'index.html',
             data=raw_data.head().to_html(classes="table table-striped"),
@@ -63,33 +73,39 @@ def upload_file():
             success=True
         )
 
-    return "Por favor, envie um arquivo CSV válido."
-
+    return "Please upload a valid CSV file."
 
 @app.route('/train', methods=['POST'])
 def train_model():
+    """
+    Train a machine learning model using the uploaded data.
+
+    - Retrieves parameters and model type from the form.
+    - Trains the model and saves it to disk.
+    - Generates prediction-related graphs.
+    """
     global uploaded_data
 
     if uploaded_data is None:
-        logger.warning("Nenhum dado carregado para treinamento.")
-        return "Nenhum dado carregado. Faça o upload de um arquivo CSV primeiro.", 400
+        logger.warning("No data uploaded for training.")
+        return "No data uploaded. Please upload a CSV file first.", 400
 
     try:
-        # Obter parâmetros do formulário
+        # Get parameters from the form
         model_type = request.form.get("model_type", "RandomForest")
         params = request.form.get("params")
         if params:
-            params = eval(params)
+            params = eval(params)  # Evaluate string as Python expression
 
-        # Instanciar e treinar o modelo com os dados já preprocessados
+        # Train the model
         model = StrokePredictionModel(uploaded_data[SELECTED_COLUMNS + ["Diagnosis"]])
         X_test, y_test = model.train_model(model_type=model_type, params=params)
         
-        # Salvar o modelo
+        # Save the trained model
         model.save_model(app.config['MODEL_PATH'])
-        logger.info(f"Modelo {model_type} treinado e salvo com sucesso.")
+        logger.info(f"Model {model_type} trained and saved successfully.")
 
-        # Gerar gráficos de predição
+        # Generate prediction-related graphs
         prediction_graphs = model.generate_prediction_graphs(X_test, y_test, app.config['STATIC_FOLDER'])
 
         return render_template(
@@ -98,22 +114,27 @@ def train_model():
             model_type=model_type,
         )
     except Exception as e:
-        logger.error(f"Erro ao treinar o modelo: {e}")
+        logger.error(f"Error during model training: {e}")
         return str(e), 500
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    """
+    Make predictions based on user input.
+
+    - Processes user-provided input.
+    - Loads the trained model and predicts the probability of stroke.
+    """
     try:
         input_data = request.form.to_dict()
         if not input_data:
-            return "Nenhum dado de entrada fornecido para predição.", 400
+            return "No input data provided for prediction.", 400
         
-        # Converter valores para os tipos apropriados
+        # Convert input values to appropriate types
         for key, value in input_data.items():
             try:
                 if value.isdigit():
-                    input_data[key] = int(value)  # Converter para int se for um número inteiro
+                    input_data[key] = int(value)  # Convert to int if input is a whole number
                 else:
                     input_data[key] = float(value) if "." in value else value
             except ValueError:
@@ -122,25 +143,26 @@ def predict():
         input_df = pd.DataFrame([input_data])
         input_df = input_df[SELECTED_COLUMNS]
         if input_df.empty:
-            return jsonify({"error": "Dados de entrada inválidos."}), 400
+            return jsonify({"error": "Invalid input data."}), 400
 
-        # Pré-processar os dados de entrada
+        # Preprocess the input data
         processor = DataProcessor(input_df)
         processed_data = processor.process(target_column=None)
 
-        # Carregar o modelo treinado
+        # Load the trained model
         model = StrokePredictionModel(None)
         model.load_model(app.config['MODEL_PATH'])
 
-        # Realizar a predição
+        # Make prediction
         prediction = model.predict(processed_data)
-        result = "Alta probabilidade de AVC" if prediction[0] == 1 else "Baixa probabilidade de AVC"
+        result = "High stroke probability" if prediction[0] == 1 else "Low stroke probability"
         return render_template("index.html", prediction_result=result)
     except Exception as e:
-        logger.error(f"Erro na predição: {e}")
+        logger.error(f"Error during prediction: {e}")
         return str(e), 500
 
-# Configuração principal
+# Main application configuration
 if __name__ == '__main__':
+    # Ensure necessary directories exist before starting the application
     setup_directories(app.config['UPLOAD_FOLDER'], app.config['STATIC_FOLDER'])
     app.run(debug=True)
