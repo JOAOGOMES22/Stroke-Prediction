@@ -72,6 +72,7 @@
                         <select name="model_type" id="model_type" class="form-control">
                             <option value="RandomForest">Random Forest</option>
                             <option value="SVM">Support Vector Machine</option>
+                            <option value="GradientBoosting">Gradient Boosting</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -84,6 +85,35 @@
         </div>
     </section>
     {% endif %}
+
+        <!-- Seção de Gráficos Relacionados à Predição -->
+        {% if prediction_graphs %}
+        <section id="prediction-graphs-section">
+            <h3 class="mt-5 text-center">📉 Resultados da Predição</h3>
+            <div class="row">
+                {% if prediction_graphs.confusion_matrix %}
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card shadow">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Matriz de Confusão</h5>
+                            <img src="{{ url_for('static', filename=prediction_graphs.confusion_matrix) }}" class="img-fluid" alt="Confusion Matrix">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if prediction_graphs.roc_curve %}
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card shadow">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Curva ROC</h5>
+                            <img src="{{ url_for('static', filename=prediction_graphs.roc_curve) }}" class="img-fluid" alt="ROC Curve">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
 
     <!-- Formulário para Realizar Predições -->
     <section id="prediction-form-section">
@@ -181,34 +211,6 @@
         </div>
     </section>
 
-    <!-- Seção de Gráficos Relacionados à Predição -->
-    {% if prediction_graphs %}
-    <section id="prediction-graphs-section">
-        <h3 class="mt-5 text-center">📉 Resultados da Predição</h3>
-        <div class="row">
-            {% if prediction_graphs.confusion_matrix %}
-            <div class="col-lg-6 col-md-12 mb-4">
-                <div class="card shadow">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Matriz de Confusão</h5>
-                        <img src="{{ url_for('static', filename=prediction_graphs.confusion_matrix) }}" class="img-fluid" alt="Confusion Matrix">
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            {% if prediction_graphs.roc_curve %}
-            <div class="col-lg-6 col-md-12 mb-4">
-                <div class="card shadow">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Curva ROC</h5>
-                        <img src="{{ url_for('static', filename=prediction_graphs.roc_curve) }}" class="img-fluid" alt="ROC Curve">
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </section>
-    {% endif %}
     <!-- Seção de Resultados da Predição -->
     {% if prediction_result %}
     <section id="prediction-result-section">

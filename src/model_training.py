@@ -2,7 +2,7 @@ import os
 import uuid
 from logging import getLogger
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, roc_curve, auc, classification_report, accuracy_score
 from joblib import dump, load
@@ -35,6 +35,8 @@ class StrokePredictionModel:
             self.model = RandomForestClassifier(random_state=42)
         elif model_type == "SVM":
             self.model = SVC(probability=True, random_state=42)
+        elif model_type == "GradientBoosting":
+            self.model = GradientBoostingClassifier(random_state=42)
         else:
             raise ValueError("Modelo não suportado. Escolha 'RandomForest' ou 'SVM'.")
 
@@ -94,7 +96,8 @@ class StrokePredictionModel:
         plt.title("Matriz de Confusão")
         plt.xlabel("Predito")
         plt.ylabel("Verdadeiro")
-        cm_path = os.path.join(static_folder, f"cm_{uuid.uuid4().hex}.png")
+        cm_filename = f"cm_{uuid.uuid4().hex}.png"
+        cm_path = os.path.join(static_folder, cm_filename)
         plt.savefig(cm_path)
         plt.close()
 
@@ -108,9 +111,10 @@ class StrokePredictionModel:
         plt.xlabel("Falsos Positivos")
         plt.ylabel("Verdadeiros Positivos")
         plt.legend(loc="lower right")
-        roc_path = os.path.join(static_folder, f"roc_{uuid.uuid4().hex}.png")
+        roc_filename = f"roc_{uuid.uuid4().hex}.png"
+        roc_path = os.path.join(static_folder, roc_filename)
         plt.savefig(roc_path)
         plt.close()
 
         logger.info(f"Gráficos gerados: {cm_path}, {roc_path}")
-        return {"confusion_matrix": cm_path, "roc_curve": roc_path}
+        return {"confusion_matrix": cm_filename, "roc_curve": roc_filename}
