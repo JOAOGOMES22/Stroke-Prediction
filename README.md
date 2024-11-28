@@ -3,8 +3,6 @@
 
 **Descrição**: Este projeto é um sistema interativo para análise de dados e predição de risco de AVE (Acidente Vascular Encefálico) utilizando aprendizado de máquina. Ele combina uma interface intuitiva baseada em Flask com modelos de classificação como Random Forest, SVM e Gradient Boosting para realizar análises preditivas. O objetivo é fornecer insights precisos e acessíveis sobre a probabilidade de AVC com base em características comportamentais e clínicas.
 
-
-
 ---
 
 ## 📋 Sumário
@@ -18,7 +16,6 @@
 7. [Estrutura do Projeto](#estrutura-do-projeto)
 8. [Contribuição](#contribuição)
 9. [Licença](#licença)
-10. [Contato](#contato)
 
 ---
 
