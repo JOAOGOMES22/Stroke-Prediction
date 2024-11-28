@@ -5,20 +5,25 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, roc_curve, auc, classification_report, accuracy_score
+from joblib import dump, load
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 logger = getLogger(__name__)
 
 class StrokePredictionModel:
-    def __init__(self, data):
+    def __init__(self, data=None):
         """
         Inicializa o modelo de predição de AVC.
         :param data: DataFrame pré-processado.
         """
         self.data = data
-        self.features = data.drop(columns=["Diagnosis"])
-        self.labels = data["Diagnosis"].astype(int)  # Garante que a variável alvo seja inteira
+        if data is not None:
+            self.features = data.drop(columns=["Diagnosis"])
+            self.labels = data["Diagnosis"].astype(int)
+        else:
+            self.features = None
+            self.labels = None
         self.model = None
 
     def train_model(self, model_type="RandomForest", params=None):
@@ -46,9 +51,39 @@ class StrokePredictionModel:
         logger.info("\n" + classification_report(y_test, y_pred))
 
         return X_test, y_test
+    
+    def predict(self, new_data):
+        """Realiza predições usando o modelo carregado."""
+        if self.model is None:
+            raise ValueError("Modelo não carregado. Use 'load_model' para carregar o modelo salvo.")
+        return self.model.predict(new_data)
+    
+    def save_model(self, model_path="models/model.joblib"):
+        """Salva o modelo treinado no diretório especificado."""
+        os.makedirs(os.path.dirname(model_path), exist_ok=True)
+        try:
+            dump(self.model, model_path)
+            logger.info(f"Modelo salvo em: {model_path}")
+        except Exception as e:
+            logger.error(f"Erro ao salvar o modelo: {e}")
+            raise
+
+    def load_model(self, model_path="models/model.joblib"):
+        """Carrega o modelo treinado do diretório especificado."""
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"O arquivo do modelo não foi encontrado em: {model_path}")
+        try:
+            self.model = load(model_path)
+            logger.info(f"Modelo carregado de: {model_path}")
+        except Exception as e:
+            logger.error(f"Erro ao carregar o modelo: {e}")
+            raise
 
     def generate_prediction_graphs(self, X_test, y_test, static_folder):
         """Gera gráficos relacionados às predições do modelo."""
+        if self.model is None:
+            raise ValueError("O modelo não foi treinado ou carregado.")
+        
         y_pred = self.model.predict(X_test)
         y_pred_proba = self.model.predict_proba(X_test)[:, 1]
 

@@ -6,83 +6,10 @@
     <title>Data Upload and Prediction</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background: #023324;
-            color: #ffffff;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        h1, h3 {
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .card {
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-        }
-        .btn-primary, .btn-success {
-            background: linear-gradient(45deg, #28a745, #3ebd5b);
-            border: none;
-            border-radius: 30px;
-            padding: 10px 20px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover, .btn-success:hover {
-            background: linear-gradient(45deg, #3ebd5b, #28a745);
-            box-shadow: 0 8px 20px rgba(62, 189, 91, 0.4);
-        }
-        .form-control-file, textarea {
-            border: 2px dashed #ffffff;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-            transition: border-color 0.3s ease, background 0.3s ease;
-        }
-        .form-control-file:hover, textarea:hover {
-            border-color: #28a745;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .img-fluid {
-            width: 100%;
-            height: auto;
-            border-radius: 15px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-        .img-fluid:hover {
-            transform: scale(1.05);
-            border-color: #28a745;
-        }
-        .table {
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-        .container {
-            max-width: 1400px;
-        }
-        footer {
-            text-align: center;
-            color: #cccccc;
-            font-size: 0.9rem;
-            margin-top: 30px;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/styles.css">
 </head>
-<body>
+<body>  
 <div class="container mt-5">
     <h1 class="text-center mb-5">📊 Upload e Predição de Dados</h1>
 
@@ -149,7 +76,7 @@
                     </div>
                     <div class="form-group">
                         <label for="params">Parâmetros (JSON):</label>
-                        <input type="text" name="params" id="params" class="form-control" placeholder='{"n_estimators": [100, 200]}'>
+                        <input type="text" name="params" id="params" class="form-control" placeholder="{n_estimators: [100, 200]}">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">⚙️ Treinar</button>
                 </form>
@@ -159,22 +86,100 @@
     {% endif %}
 
     <!-- Formulário para Realizar Predições -->
-    {% if prediction_graphs %}
     <section id="prediction-form-section">
         <div class="card shadow mb-5">
             <div class="card-body">
-                <h5 class="card-title text-center">🔮 Realizar Predição</h5>
+                <h5 class="card-title text-center">🔮 Preencha os Dados do Paciente</h5>
                 <form action="/predict" method="post" id="predict-form">
-                    <div class="form-group">
-                        <label for="input_data">Dados do Paciente (JSON):</label>
-                        <textarea name="input_data" id="input_data" class="form-control" rows="5" placeholder='{"Age": 70, "Hypertension": 1, "Heart Disease": 0, "Average Glucose Level": 100, "Body Mass Index (BMI)": 25, "Smoking Status": "Never", "Alcohol Intake": "Rarely", "Physical Activity": "Low", "Stress Levels": 3}'></textarea>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="Age">Idade</label>
+                            <input type="number" class="form-control" id="Age" name="Age" placeholder="Ex: 70" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="Gender">Gênero</label>
+                            <select class="form-control" id="Gender" name="Gender" required>
+                                <option value="Male">Masculino</option>
+                                <option value="Female">Feminino</option>
+                            </select>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-success btn-block">🔮 Prever</button>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="Hypertension">Hipertensão</label>
+                            <select class="form-control" id="Hypertension" name="Hypertension" required>
+                                <option value="0">Não</option>
+                                <option value="1">Sim</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="HeartDisease">Doença Cardíaca</label>
+                            <select class="form-control" id="HeartDisease" name="Heart Disease" required>
+                                <option value="0">Não</option>
+                                <option value="1">Sim</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="AverageGlucoseLevel">Nível Médio de Glicose</label>
+                            <input type="number" step="0.01" class="form-control" id="AverageGlucoseLevel" name="Average Glucose Level" placeholder="Ex: 100" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="SmokingStatus">Status de Fumante</label>
+                            <select class="form-control" id="SmokingStatus" name="Smoking Status" required>
+                                <option value="Non-smoker">Não Fumante</option>
+                                <option value="Formerly Smoked">Ex-Fumante</option>
+                                <option value="Currently Smokes">Fumante</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="AlcoholIntake">Consumo de Álcool</label>
+                            <select class="form-control" id="AlcoholIntake" name="Alcohol Intake" required>
+                                <option value="Rarely">Raramente</option>
+                                <option value="Occasionally">Ocasionalmente</option>
+                                <option value="Frequently">Frequentemente</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="PhysicalActivity">Atividade Física</label>
+                            <select class="form-control" id="PhysicalActivity" name="Physical Activity" required>
+                                <option value="Low">Baixa</option>
+                                <option value="Moderate">Moderada</option>
+                                <option value="High">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="StressLevels">Nível de Estresse (0-10)</label>
+                            <input type="number" class="form-control" id="StressLevels" name="Stress Levels" min="0" max="10" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="FamilyHistory">Histórico Familiar de AVC</label>
+                            <select class="form-control" id="FamilyHistory" name="Family History of Stroke" required>
+                                <option value="0">Não</option>
+                                <option value="1">Sim</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="DietaryHabits">Hábitos Alimentares</label>
+                            <select class="form-control" id="DietaryHabits" name="Dietary Habits" required>
+                                <option value="Vegan">Vegano</option>
+                                <option value="Vegetarian">Vegetariano</option>
+                                <option value="Omnivorous">Onívoro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block mt-3">🔮 Realizar Predição</button>
                 </form>
             </div>
         </div>
     </section>
-    {% endif %}
 
     <!-- Seção de Gráficos Relacionados à Predição -->
     {% if prediction_graphs %}
@@ -201,6 +206,15 @@
                 </div>
             </div>
             {% endif %}
+        </div>
+    </section>
+    {% endif %}
+    <!-- Seção de Resultados da Predição -->
+    {% if prediction_result %}
+    <section id="prediction-result-section">
+        <div class="alert alert-info text-center" role="alert">
+            <h4>🔮 Resultado da Predição</h4>
+            <p>{{ prediction_result }}</p>
         </div>
     </section>
     {% endif %}

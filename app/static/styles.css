@@ -1,0 +1,73 @@
+body{
+    background: #023324 !important;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+h1, h3 {
+    font-weight: bold;
+    color: #ffffff;
+}
+.card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+.btn-primary, .btn-success {
+    background: linear-gradient(45deg, #28a745, #3ebd5b);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.btn-primary:hover, .btn-success:hover {
+    background: linear-gradient(45deg, #3ebd5b, #28a745);
+    box-shadow: 0 8px 20px rgba(62, 189, 91, 0.4);
+}
+.form-control-file, textarea {
+    border: 2px dashed #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+.form-control-file:hover, textarea:hover {
+    border-color: #28a745;
+    background: rgba(255, 255, 255, 0.2);
+}
+.img-fluid {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.img-fluid:hover {
+    transform: scale(1.05);
+    border-color: #28a745;
+}
+.table {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+.container {
+    max-width: 1400px;
+}
+footer {
+    text-align: center;
+    color: #cccccc;
+    font-size: 0.9rem;
+    margin-top: 30px;
+}
